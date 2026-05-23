@@ -3,8 +3,8 @@
 > **Fine-tuned Mistral 7B v0.3 for Natural Language → SQL Generation**
 > Built with Unsloth + QLoRA on the SQLCoder dataset. 2x faster training, 70% less VRAM.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USERNAME/QueryForge-AI/blob/main/QueryForge_AI_Finetune.ipynb)
-[![HuggingFace Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/YOUR_USERNAME/QueryForge-Mistral-7B-SQL)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ankita-kadam03/QueryForge-AI/blob/main/QueryForge_AI_Finetune.ipynb)
+[![HuggingFace Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/anku03/QueryForge-Mistral-7B-SQL)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue)](https://python.org)
 
@@ -41,27 +41,25 @@ Model → SELECT customer_name, SUM(amount) AS total_revenue
 | 📦 Dataset | `b-mc2/sql-create-context` (78,577 SQL pairs) |
 | 🎯 Task | Natural Language → SQL (Text2SQL) |
 | 🗄️ Schema-aware | Yes — uses CREATE TABLE context |
-| 💾 Export formats | LoRA adapter, 16-bit merged, GGUF (Ollama) |
-| 🖥️ GPU requirement | Free T4 (16GB) on Google Colab |
+| 💾 Model on HuggingFace | [anku03/QueryForge-Mistral-7B-SQL](https://huggingface.co/anku03/QueryForge-Mistral-7B-SQL) |
+| 🖥️ GPU requirement | Free T4 (16GB) on Google Colab / Kaggle |
 
 ---
 
 ## 🚀 Quick Start
 
 ### Option 1: Run on Google Colab (Free GPU)
-Click the badge above → Runtime → Run All → Done!
+Click the Colab badge above → Runtime → Change runtime to T4 GPU → Run All → Done!
 
 ### Option 2: Run Locally
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/QueryForge-AI.git
+git clone https://github.com/ankita-kadam03/QueryForge-AI.git
 cd QueryForge-AI
 
 # Install dependencies
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
-pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
-pip install datasets transformers
+pip install -r requirements.txt
 
 # Run training
 jupyter notebook QueryForge_AI_Finetune.ipynb
@@ -72,15 +70,8 @@ jupyter notebook QueryForge_AI_Finetune.ipynb
 ```python
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-model     = AutoModelForCausalLM.from_pretrained("YOUR_USERNAME/QueryForge-Mistral-7B-SQL")
-tokenizer = AutoTokenizer.from_pretrained("YOUR_USERNAME/QueryForge-Mistral-7B-SQL")
-```
-
-### Option 4: Ollama (Local Inference)
-
-```bash
-ollama import queryforge-gguf/model.gguf
-ollama run queryforge-sql
+model     = AutoModelForCausalLM.from_pretrained("anku03/QueryForge-Mistral-7B-SQL")
+tokenizer = AutoTokenizer.from_pretrained("anku03/QueryForge-Mistral-7B-SQL")
 ```
 
 ---
@@ -120,22 +111,22 @@ correctly answers the request.
 
 ```python
 # Model
-model_name    = "unsloth/mistral-7b-v0.3-bnb-4bit"
+model_name     = "unsloth/mistral-7b-v0.3-bnb-4bit"
 max_seq_length = 2048
-load_in_4bit  = True
+load_in_4bit   = True
 
 # QLoRA
-r             = 16
-lora_alpha    = 16
+r              = 16
+lora_alpha     = 16
 target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
                   "gate_proj", "up_proj", "down_proj"]
 
 # Training
-batch_size    = 2
-grad_accum    = 4   # Effective batch = 8
-epochs        = 1
-learning_rate = 2e-4
-optimizer     = "adamw_8bit"
+batch_size     = 2
+grad_accum     = 4   # Effective batch = 8
+epochs         = 1
+learning_rate  = 2e-4
+optimizer      = "adamw_8bit"
 ```
 
 ---
@@ -188,13 +179,6 @@ QueryForge-AI/
 ├── requirements.txt
 ├── LICENSE
 │
-├── app/                          # (Coming Soon) Web application
-│   ├── backend/                  # FastAPI server
-│   │   ├── main.py
-│   │   └── inference.py
-│   └── frontend/                 # React dashboard
-│       └── src/
-│
 └── examples/
     ├── inference_demo.py         # Quick inference script
     └── sample_queries.md         # Example NL → SQL pairs
@@ -206,14 +190,11 @@ QueryForge-AI/
 
 - [x] Fine-tune Mistral 7B on SQL dataset
 - [x] Schema-aware prompting (Alpaca format)
-- [x] GGUF export for local inference
-- [x] HuggingFace Hub upload
+- [x] HuggingFace Hub upload (14.5 GB full model)
 - [ ] FastAPI backend for inference
 - [ ] React frontend with schema editor
 - [ ] Live SQL execution + results table
 - [ ] Docker deployment
-- [ ] Query explanation feature
-- [ ] SQL optimization suggestions
 
 ---
 
@@ -221,13 +202,13 @@ QueryForge-AI/
 
 ```
 torch>=2.0
-transformers>=4.40
+transformers==4.56.2
 unsloth
-trl<0.9.0
+trl==0.22.2
 peft
 accelerate
 bitsandbytes
-datasets
+datasets==4.3.0
 ```
 
 Or just: `pip install -r requirements.txt`
